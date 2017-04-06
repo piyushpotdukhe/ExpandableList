@@ -24,17 +24,17 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Activity context;
     private Map<String, List<String>> testCaseCollection;
-    private List<String> testCases;
+    private List<String> testCaseGroupList;
 
-    public ExpandableListAdapter(Activity context, List<String> testCases,
-                                 Map<String, List<String>> laptopCollection) {
+    public ExpandableListAdapter(Activity context, List<String> tcGroupList,
+                                 Map<String, List<String>> tcCollection) {
         this.context = context;
-        this.testCaseCollection = laptopCollection;
-        this.testCases = testCases;
+        this.testCaseCollection = tcCollection;
+        this.testCaseGroupList = tcGroupList;
     }
 
     public Object getChild(int groupPosition, int childPosition) {
-        return testCaseCollection.get(testCases.get(groupPosition)).get(childPosition);
+        return testCaseCollection.get(testCaseGroupList.get(groupPosition)).get(childPosition);
     }
 
     public long getChildId(int groupPosition, int childPosition) {
@@ -53,7 +53,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         TextView item = (TextView) convertView.findViewById(R.id.laptop);
 
-        // this is on click of image view, replacing with chkbox
+        // this is on click of image view: just in case if needed in future.
         ImageView chkbox_img = (ImageView) convertView.findViewById(R.id.chkbox_img);
         chkbox_img.setOnClickListener(new OnClickListener() {
 
@@ -66,15 +66,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public int getChildrenCount(int groupPosition) {
-        return testCaseCollection.get(testCases.get(groupPosition)).size();
+        return testCaseCollection.get(testCaseGroupList.get(groupPosition)).size();
     }
 
     public Object getGroup(int groupPosition) {
-        return testCases.get(groupPosition);
+        return testCaseGroupList.get(groupPosition);
     }
 
     public int getGroupCount() {
-        return testCases.size();
+        return testCaseGroupList.size();
     }
 
     public long getGroupId(int groupPosition) {
