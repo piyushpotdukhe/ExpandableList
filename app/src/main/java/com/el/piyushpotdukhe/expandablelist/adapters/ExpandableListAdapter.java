@@ -11,6 +11,8 @@ import com.el.piyushpotdukhe.expandablelist.R;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +53,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.child_item, null);
         }
 
-        TextView item = (TextView) convertView.findViewById(R.id.laptop);
+        TextView item = (TextView) convertView.findViewById(R.id.child_item);
 
         // this is on click of image view: just in case if needed in future.
         ImageView chkbox_img = (ImageView) convertView.findViewById(R.id.chkbox_img);
@@ -83,16 +85,18 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
-        String laptopName = (String) getGroup(groupPosition);
+        String groupName = (String) getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.group_item,
                     null);
         }
-        TextView item = (TextView) convertView.findViewById(R.id.laptop);
-        item.setTypeface(null, Typeface.BOLD);
-        item.setText(laptopName);
+        TextView item = (TextView) convertView.findViewById(R.id.child_item);
+        item.setTypeface(null, Typeface.BOLD_ITALIC);
+        item.setText(groupName);
+        item.setTextColor(Color.BLACK);
+//        item.setTextSize(16);
         return convertView;
     }
 
