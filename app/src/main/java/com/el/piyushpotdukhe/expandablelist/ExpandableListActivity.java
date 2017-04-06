@@ -11,7 +11,6 @@ import java.util.Map;
 import com.el.piyushpotdukhe.expandablelist.adapters.ExpandableListAdapter;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -23,7 +22,7 @@ public class ExpandableListActivity extends Activity {
 
     List<String> groupList;
     List<String> childList;
-    Map<String, List<String>> laptopCollection;
+    Map<String, List<String>> tcCollection;
     ExpandableListView expListView;
 
 //    public final String LOG_TAG = "AutomatorListActivity";
@@ -37,7 +36,7 @@ public class ExpandableListActivity extends Activity {
 
         expListView = (ExpandableListView) findViewById(R.id.tc_group);
         final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
-                this, groupList, laptopCollection);
+                this, groupList, tcCollection);
         expListView.setAdapter(expListAdapter);
 
         expListView.setOnChildClickListener(new OnChildClickListener() {
@@ -87,7 +86,7 @@ public class ExpandableListActivity extends Activity {
         String[] CS_Cases = {"Conference Call", "Video Mo Call"};
         String[] VoWiFi_Cases = {"SMS", "Registration"};
 
-        laptopCollection = new LinkedHashMap<String, List<String>>();
+        tcCollection = new LinkedHashMap<String, List<String>>();
 
         for (String tcGroup : groupList) {
             if (tcGroup.equals("VOLTE")) {
@@ -99,7 +98,7 @@ public class ExpandableListActivity extends Activity {
             } else {
                 loadChild(CS_Cases);
             }
-            laptopCollection.put(tcGroup, childList);
+            tcCollection.put(tcGroup, childList);
         }
     }
 
