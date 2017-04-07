@@ -11,7 +11,6 @@ import com.el.piyushpotdukhe.expandablelist.R;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -43,7 +42,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return childPosition;
     }
 
-
     public View getChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final String laptop = (String) getChild(groupPosition, childPosition);
@@ -56,9 +54,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView item = (TextView) convertView.findViewById(R.id.child_item);
 
         // this is on click of image view: just in case if needed in future.
-        ImageView chkbox_img = (ImageView) convertView.findViewById(R.id.chkbox_img);
-        chkbox_img.setOnClickListener(new OnClickListener() {
-
+        ImageView checkBoxImg = (ImageView) convertView.findViewById(R.id.chkbox_img);
+        checkBoxImg.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
 
             }

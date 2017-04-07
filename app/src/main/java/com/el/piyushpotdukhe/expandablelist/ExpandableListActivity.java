@@ -4,15 +4,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.el.piyushpotdukhe.expandablelist.adapters.ExpandableListAdapter;
 
-import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -20,16 +21,16 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-//public class ExpandableListActivity extends Activity {
 public class ExpandableListActivity extends AppCompatActivity {
+    public static final String LOG_TAG = "ExpandableListActivity";
 
-    List<String> groupList;
+    // <--- schema to maintain the grouping of elements --->
+    List<String> groupList; // this is group names list. Used as Key for myCollection map.
     List<String> childList;
-    Map<String, List<String>> tcCollection;
+    Map<String, List<String>> myCollection; // this is { GroupName, ChildList }
+
     ExpandableListView expListView;
 
-
-//    public final String LOG_TAG = "AutomatorListActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,46 +44,52 @@ public class ExpandableListActivity extends AppCompatActivity {
 
         expListView = (ExpandableListView) findViewById(R.id.tc_group);
         final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
-                this, groupList, tcCollection);
+                this, groupList, myCollection);
         expListView.setAdapter(expListAdapter);
 
         expListView.setOnChildClickListener(new OnChildClickListener() {
-
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
                 final String selected = (String) expListAdapter.getChild(
                         groupPosition, childPosition);
-                Toast.makeText(getBaseContext(), selected, Toast.LENGTH_LONG)
-                        .show();
+                Toast.makeText(getBaseContext(), selected, Toast.LENGTH_SHORT).show();
 
-                ImageView chkbox_img = (ImageView) (((RelativeLayout) v).getChildAt(1));
-                chkbox_img.setImageDrawable(getSwitchImage(chkbox_img));
+                ImageView checkBoxImg = (ImageView) (((RelativeLayout) v).getChildAt(1));
+                checkBoxImg.setImageDrawable(getToggledCheckBoxImage(checkBoxImg));
                 return true;
             }
 
-            private Drawable getSwitchImage(ImageView chkbox) {
+            private Drawable getToggledCheckBoxImage(ImageView chkbox) {
                 Drawable result = chkbox.getDrawable();
+                try {
+                    Drawable.ConstantState drawableFromImageView = chkbox.getDrawable().getConstantState();
+                    Drawable.ConstantState drawableChecked = getDrawable(R.drawable.icon_checked).getConstantState();
+                    Drawable.ConstantState drawableUnChecked = getDrawable(R.drawable.icon_unchecked).getConstantState();
 
-                Drawable.ConstantState drawableFromImageView = chkbox.getDrawable().getConstantState();
-                Drawable.ConstantState drawableChecked = getDrawable(R.drawable.icon_checked).getConstantState();
-                Drawable.ConstantState drawableUnChecked = getDrawable(R.drawable.icon_unchecked).getConstantState();
+                    /*Log.d(LOG_TAG, "drawableFromImageView =" + drawableFromImageView);
+                    Log.d(LOG_TAG, "drawableChecked       =" + drawableChecked);
+                    Log.d(LOG_TAG, "drawableUnChecked     =" + drawableUnChecked);*/
 
-                /*Log.d("TestMe", "drawableFromImageView =" + drawableFromImageView);
-                Log.d("TestMe", "drawableChecked       =" + drawableChecked);
-                Log.d("TestMe", "drawableUnChecked     =" + drawableUnChecked);*/
-
-                if (drawableFromImageView == drawableChecked) {
-                    result = getDrawable(R.drawable.icon_unchecked);
-                } else if (drawableFromImageView == drawableUnChecked) {
-                    result = getDrawable(R.drawable.icon_checked);
+                    if (drawableFromImageView == drawableChecked) {
+                        result = getDrawable(R.drawable.icon_unchecked);
+                    } else if (drawableFromImageView == drawableUnChecked) {
+                        result = getDrawable(R.drawable.icon_checked);
+                    }
+                } catch (NullPointerException npe) {
+                    Log.e(LOG_TAG, "NullPointerException");
+                    npe.printStackTrace();
+                    Toast.makeText(getApplicationContext()
+                            , "Could not select due to internal exception."
+                            , Toast.LENGTH_SHORT).show();
                 }
+
                 return result;
             }
         });
     }
 
     private void createGroupList() {
-        groupList = new ArrayList<String>();
+        groupList = new ArrayList<>();
         groupList.add("VOLTE");
         groupList.add("CS");
         groupList.add("VOWIFI");
@@ -93,25 +100,21 @@ public class ExpandableListActivity extends AppCompatActivity {
         String[] CS_Cases = {"Conference Call", "Video Mo Call"};
         String[] VoWiFi_Cases = {"SMS", "Registration"};
 
-        tcCollection = new LinkedHashMap<String, List<String>>();
+        myCollection = new LinkedHashMap<>();
 
         for (String tcGroup : groupList) {
-            if (tcGroup.equals("VOLTE")) {
-                loadChild(VoLTE_Cases);
-            } else if (tcGroup.equals("CS")) {
-                loadChild(CS_Cases);
-            } else if (tcGroup.equals("VOWIFI")) {
-                loadChild(VoWiFi_Cases);
-            } else {
-                loadChild(CS_Cases);
+            switch (tcGroup){
+                case "CS"       : loadChild(CS_Cases)     ; break;
+                case "VOLTE"    : loadChild(VoLTE_Cases)  ; break;
+                case "VOWIFI"   : loadChild(VoWiFi_Cases) ; break;
+                default: loadChild(CS_Cases);
             }
-            tcCollection.put(tcGroup, childList);
+            myCollection.put(tcGroup, childList);
         }
     }
 
     private void loadChild(String[] testCases) {
-        childList = new ArrayList<String>();
-        for (String tc : testCases)
-            childList.add(tc);
+        childList = new ArrayList<>();
+        childList.addAll(Arrays.asList(testCases));
     }
 }
