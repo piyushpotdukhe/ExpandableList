@@ -11,6 +11,8 @@ import java.util.Map;
 import com.el.piyushpotdukhe.expandablelist.adapters.ExpandableListAdapter;
 
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -18,18 +20,23 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-public class ExpandableListActivity extends Activity {
+//public class ExpandableListActivity extends Activity {
+public class ExpandableListActivity extends AppCompatActivity {
 
     List<String> groupList;
     List<String> childList;
     Map<String, List<String>> tcCollection;
     ExpandableListView expListView;
 
+
 //    public final String LOG_TAG = "AutomatorListActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         createGroupList();
         createCollection();
