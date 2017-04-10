@@ -12,14 +12,14 @@ import com.el.piyushpotdukhe.expandablelist.R;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -44,23 +44,24 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     public View getChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
-        final String laptop = (String) getChild(groupPosition, childPosition);
+        final String tcName = (String) getChild(groupPosition, childPosition);
         LayoutInflater inflater = context.getLayoutInflater();
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.child_item, null);
         }
 
-        TextView item = (TextView) convertView.findViewById(R.id.child_item);
-
-        // this is on click of image view: just in case if needed in future.
-        ImageView checkBoxImg = (ImageView) convertView.findViewById(R.id.chkbox_img);
-        checkBoxImg.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-
+        CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.child_check_box);
+        checkBox.setText(tcName);
+        checkBox.setTextColor(Color.GRAY);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(context, "Child Name: " + buttonView.getText()
+                        +" : "+ isChecked, Toast.LENGTH_SHORT).show();
             }
         });
-        item.setText(laptop);
+
         return convertView;
     }
 
@@ -81,19 +82,25 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public View getGroupView(int groupPosition, boolean isExpanded,
-                             View convertView, ViewGroup parent) {
+                             View convertView, final ViewGroup parent) {
         String groupName = (String) getGroup(groupPosition);
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) context
+            LayoutInflater layoutInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.group_item,
-                    null);
+            convertView = layoutInflater.inflate(R.layout.group_item, null);
         }
-        TextView item = (TextView) convertView.findViewById(R.id.child_item);
-        item.setTypeface(null, Typeface.BOLD_ITALIC);
-        item.setText(groupName);
-        item.setTextColor(Color.BLACK);
-//        item.setTextSize(16);
+
+        CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.group_item_check_box);
+        checkBox.setText(groupName);
+        checkBox.setTextColor(Color.BLACK);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(context, "Group Name: " + buttonView.getText()
+                        +" : "+ isChecked, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return convertView;
     }
 

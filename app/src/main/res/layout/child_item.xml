@@ -3,21 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:padding="2dp">
-
-    <TextView
-        android:id="@+id/child_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:paddingLeft="25dp"/>
-
-    <ImageView
-        android:id="@+id/chkbox_img"
+    <CheckBox
+        android:id="@+id/child_check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:paddingRight="6dp"
-        android:src="@drawable/icon_unchecked"/>
-    <!--android:src="@android:drawable/presence_busy"-->
+        android:button="@null"
+        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        android:focusable="false"/>
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.el.piyushpotdukhe.expandablelist;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -13,13 +12,11 @@ import com.el.piyushpotdukhe.expandablelist.adapters.ExpandableListAdapter;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 public class ExpandableListActivity extends AppCompatActivity {
     public static final String LOG_TAG = "ExpandableListActivity";
@@ -46,47 +43,19 @@ public class ExpandableListActivity extends AppCompatActivity {
         final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
                 this, groupList, myCollection);
         expListView.setAdapter(expListAdapter);
-
         expListView.setOnChildClickListener(new OnChildClickListener() {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                final String selected = (String) expListAdapter.getChild(
+                final String selectedChild = (String) expListAdapter.getChild(
                         groupPosition, childPosition);
-                Toast.makeText(getBaseContext(), selected, Toast.LENGTH_SHORT).show();
 
-                ImageView checkBoxImg = (ImageView) (((RelativeLayout) v).getChildAt(1));
-                checkBoxImg.setImageDrawable(getToggledCheckBoxImage(checkBoxImg));
+                CheckBox childCheckBox = (CheckBox) (((RelativeLayout) v).getChildAt(0));
+                childCheckBox.setChecked(!childCheckBox.isChecked());
+
                 return true;
             }
-
-            private Drawable getToggledCheckBoxImage(ImageView chkbox) {
-                Drawable result = chkbox.getDrawable();
-                try {
-                    Drawable.ConstantState drawableFromImageView = chkbox.getDrawable().getConstantState();
-                    Drawable.ConstantState drawableChecked = getDrawable(R.drawable.icon_checked).getConstantState();
-                    Drawable.ConstantState drawableUnChecked = getDrawable(R.drawable.icon_unchecked).getConstantState();
-
-                    /*Log.d(LOG_TAG, "drawableFromImageView =" + drawableFromImageView);
-                    Log.d(LOG_TAG, "drawableChecked       =" + drawableChecked);
-                    Log.d(LOG_TAG, "drawableUnChecked     =" + drawableUnChecked);*/
-
-                    if (drawableFromImageView == drawableChecked) {
-                        result = getDrawable(R.drawable.icon_unchecked);
-                    } else if (drawableFromImageView == drawableUnChecked) {
-                        result = getDrawable(R.drawable.icon_checked);
-                    }
-                } catch (NullPointerException npe) {
-                    Log.e(LOG_TAG, "NullPointerException");
-                    npe.printStackTrace();
-                    Toast.makeText(getApplicationContext()
-                            , "Could not select due to internal exception."
-                            , Toast.LENGTH_SHORT).show();
-                }
-
-                return result;
-            }
         });
-    }
+    } //e.o.onCreate
 
     private void createGroupList() {
         groupList = new ArrayList<>();
