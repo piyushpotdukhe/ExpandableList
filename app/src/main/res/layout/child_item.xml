@@ -7,8 +7,11 @@
         android:id="@+id/child_check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_marginStart="50dp"
+        android:focusable="false"/>
+
+    <!-- include below lines in checkbox for exchanging the positions of text and checkbox
         android:button="@null"
         android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
-        android:focusable="false"/>
+    -->
 </RelativeLayout>
