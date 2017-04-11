@@ -4,6 +4,8 @@ package com.el.piyushpotdukhe.expandablelist.adapters;
  * Created by piyush.potdukhe on 4/4/2017.
  */
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Activity context;
     private Map<String, List<String>> testCaseCollection;
+    private static Map<String, List<CheckBox>> groupViewHolder = new LinkedHashMap<>();
     private List<String> testCaseGroupList;
 
     public ExpandableListAdapter(Activity context, List<String> tcGroupList,
@@ -45,6 +48,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final String tcName = (String) getChild(groupPosition, childPosition);
+//        Log.d("ExpandableListAdapter", "getChildView");
         LayoutInflater inflater = context.getLayoutInflater();
 
         if (convertView == null) {
@@ -54,6 +58,23 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.child_check_box);
         checkBox.setText(tcName);
         checkBox.setTextColor(Color.GRAY);
+
+        String grpString = testCaseGroupList.get(groupPosition);
+        if (groupViewHolder.containsKey(grpString)) {
+            List<CheckBox> childCheckBoxList =  groupViewHolder.get(grpString);
+            if (!childCheckBoxList.contains(checkBox)) {
+                childCheckBoxList.add(checkBox);
+            }
+            groupViewHolder.remove(grpString);
+            groupViewHolder.put(grpString, childCheckBoxList);
+        } else { // this is first time.
+            List<CheckBox> childCheckBoxList = new ArrayList<>();
+            childCheckBoxList.add(checkBox);
+            groupViewHolder.put(grpString, childCheckBoxList);
+        }
+
+// code said: i was here.
+
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -81,9 +102,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return groupPosition;
     }
 
-    public View getGroupView(int groupPosition, boolean isExpanded,
+    /*public class GroupViewHolder {
+        CheckBox groupcheck;
+    }*/
+
+
+
+    public View getGroupView(final int groupPosition, boolean isExpanded,
                              View convertView, final ViewGroup parent) {
         String groupName = (String) getGroup(groupPosition);
+//        Log.d("ExpandableListAdapter", "getGroupView");
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -98,11 +126,49 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Toast.makeText(context, "Group Name: " + buttonView.getText()
                         +" : "+ isChecked, Toast.LENGTH_SHORT).show();
+
+                for (int i=0; i<groupViewHolder.size(); i++) {
+                    List<CheckBox> childCheckBoxList = groupViewHolder.get(buttonView.getText());
+                    /*Log.d("ExpandableListAdapter", "getChildView, groupViewHolder= {"
+                            + " group = " + grpString
+                            + " child = " + childCheckBoxList
+                            + " }"
+                    );*/
+
+                    for (CheckBox cb: childCheckBoxList) {
+                        cb.setChecked(isChecked);
+                    }
+                }
             }
+
         });
+
+        /*checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0; i<(testCaseCollection.get(groupPosition)).size(); i++) {
+                    testCaseCollection.get(groupPosition).get(i).setCheck(gholder.groupcheckbox.isChecked());
+                }
+
+                array.get(groupPosition).setCheck(gholder.groupcheck.isChecked());
+
+                notifyDataSetChanged();
+            }
+        });*/
 
         return convertView;
     }
+
+    /*@Override
+    public void onGroupExpanded(int groupPosition) {
+        super.onGroupExpanded(groupPosition);
+        Toast.makeText(context, "onGroupExpanded:groupPosition=" + groupPosition, Toast.LENGTH_SHORT).show();
+
+        if(is_group_checked) {
+            check all children.
+        }
+
+    }*/
 
     public boolean hasStableIds() {
         return true;
