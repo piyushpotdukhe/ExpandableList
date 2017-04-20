@@ -43,14 +43,27 @@ public class ExpandableListActivity extends AppCompatActivity {
         final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
                 this, groupList, myCollection);
         expListView.setAdapter(expListAdapter);
+        /*expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            public boolean onGroupClick(ExpandableListView parent, View v,
+                                        int groupPosition, long id) {
+                final String groupString = (String) expListAdapter.getGroup(groupPosition);
+
+                *//*List<CheckBox> childCheckBoxList = ExpandableListAdapter.groupViewHolder.get(groupString);
+                for (CheckBox cb : childCheckBoxList) {
+                    cb.setChecked(ExpandableListAdapter.groupCheckBoxStatus.get(groupString));
+                }*//*
+
+                return true;
+            }
+        });*/
         expListView.setOnChildClickListener(new OnChildClickListener() {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
                 final String selectedChild = (String) expListAdapter.getChild(
                         groupPosition, childPosition);
 
-                CheckBox childCheckBox = (CheckBox) (((RelativeLayout) v).getChildAt(0));
-                childCheckBox.setChecked(!childCheckBox.isChecked());
+//                CheckBox childCheckBox = (CheckBox) (((RelativeLayout) v).getChildAt(0));
+//                childCheckBox.setChecked(!childCheckBox.isChecked());
 
                 return true;
             }
