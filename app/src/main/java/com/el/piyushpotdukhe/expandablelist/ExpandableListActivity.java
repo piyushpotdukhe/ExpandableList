@@ -1,5 +1,9 @@
 package com.el.piyushpotdukhe.expandablelist;
 
+/**
+ * Created by piyush.potdukhe on 4/4/2017.
+ */
+
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -12,11 +16,7 @@ import com.el.piyushpotdukhe.expandablelist.adapters.ExpandableListAdapter;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.RelativeLayout;
 
 public class ExpandableListActivity extends AppCompatActivity {
     public static final String LOG_TAG = "ExpandableListActivity";
@@ -43,31 +43,6 @@ public class ExpandableListActivity extends AppCompatActivity {
         final ExpandableListAdapter expListAdapter = new ExpandableListAdapter(
                 this, groupList, myCollection);
         expListView.setAdapter(expListAdapter);
-        /*expListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            public boolean onGroupClick(ExpandableListView parent, View v,
-                                        int groupPosition, long id) {
-                final String groupString = (String) expListAdapter.getGroup(groupPosition);
-
-                *//*List<CheckBox> childCheckBoxList = ExpandableListAdapter.groupViewHolder.get(groupString);
-                for (CheckBox cb : childCheckBoxList) {
-                    cb.setChecked(ExpandableListAdapter.groupCheckBoxStatus.get(groupString));
-                }*//*
-
-                return true;
-            }
-        });*/
-        expListView.setOnChildClickListener(new OnChildClickListener() {
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                final String selectedChild = (String) expListAdapter.getChild(
-                        groupPosition, childPosition);
-
-//                CheckBox childCheckBox = (CheckBox) (((RelativeLayout) v).getChildAt(0));
-//                childCheckBox.setChecked(!childCheckBox.isChecked());
-
-                return true;
-            }
-        });
     } //e.o.onCreate
 
     private void createGroupList() {
@@ -85,11 +60,18 @@ public class ExpandableListActivity extends AppCompatActivity {
         myCollection = new LinkedHashMap<>();
 
         for (String tcGroup : groupList) {
-            switch (tcGroup){
-                case "CS"       : loadChild(CS_Cases)     ; break;
-                case "VOLTE"    : loadChild(VoLTE_Cases)  ; break;
-                case "VOWIFI"   : loadChild(VoWiFi_Cases) ; break;
-                default: loadChild(CS_Cases);
+            switch (tcGroup) {
+                case "CS":
+                    loadChild(CS_Cases);
+                    break;
+                case "VOLTE":
+                    loadChild(VoLTE_Cases);
+                    break;
+                case "VOWIFI":
+                    loadChild(VoWiFi_Cases);
+                    break;
+                default:
+                    loadChild(CS_Cases);
             }
             myCollection.put(tcGroup, childList);
         }

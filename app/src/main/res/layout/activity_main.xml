@@ -11,21 +11,23 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
     <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
 
     <LinearLayout
         android:id="@+id/heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/my_toolbar">
+        android:layout_below="@id/my_toolbar"
+        android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:gravity="center"
             android:text="Test Cases Selection Screen"
             android:textSize="20dp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -37,13 +39,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/heading">
+        android:layout_below="@id/heading"
+        android:orientation="vertical">
+
         <ExpandableListView
             android:id="@+id/tc_group"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </ExpandableListView>
+            android:layout_height="match_parent"></ExpandableListView>
     </LinearLayout>
 
 </RelativeLayout>

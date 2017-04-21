@@ -4,8 +4,6 @@ package com.el.piyushpotdukhe.expandablelist.adapters;
  * Created by piyush.potdukhe on 4/4/2017.
  */
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +41,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         this.context = context;
         this.testCaseCollection = tcCollection;
         this.testCaseGroupList = tcGroupList;
-        notifyDataSetChanged();
+        notifyDataSetChanged(); // as data set is changed, view for adapter will be reloaded.
     }
 
     public Object getChild(int groupPosition, int childPosition) {
@@ -67,26 +65,30 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         checkBox.setText(tcName);
         checkBox.setTextColor(Color.GRAY);
 
-        //if group is checked, disable sub-list all expanded elements
+        //toggle sub-list, on group status changed.
         checkBox.setEnabled(!getAllCBStatus(getGroupName(tcName)));
 
 //        Log.d("ExpandableListAdapter", "getChildView: " + checkBox.getText() + "=" + checkBox.isChecked() );
         if (checkBox.isChecked() != getAllCBStatus(tcName)) { // refrain additional onChecked calls
+            checkBox.setOnCheckedChangeListener(null);// refrain unnecessary checking/unchecking
             checkBox.setChecked(getAllCBStatus(tcName));
         }
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    updateAllCBStatus(buttonView.getText().toString(), isChecked);
-                    setNewItems(context, testCaseGroupList, testCaseCollection);
+                String clickedChild = buttonView.getText().toString();
+//                Log.d("ExpandableListAdapter", "onCheckedChanged-CHILD: " + clickedChild + "=" + isChecked);
+                updateAllCBStatus(clickedChild, isChecked);
+                setNewItems(context, testCaseGroupList, testCaseCollection);
             }
         });
+
         return convertView;
     }
 
     private String getGroupName(String childName) {
-        for (String groupName: testCaseGroupList) {
+        for (String groupName : testCaseGroupList) {
             List<String> childTCs = testCaseCollection.get(groupName);
             if (childTCs.contains(childName)) {
                 return groupName;
@@ -95,21 +97,24 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         return "qwerty"; // group not found, return some dummy
     }
 
-    private Boolean areAllSubChildsSame(List<String> childTCs, Boolean value, String childTestCaseName) {
+    private Boolean areAllChildrenChecked(List<String> childTCs, Boolean value, String childTestCaseName) {
         boolean result = value;
         int totalChildrenChecked = 0;
-        for (String childTC: childTCs) {
+        for (String childTC : childTCs) {
             if (allCBStatus.containsKey(childTC)) {
                 result = result & /*^*/ allCBStatus.get(childTC);
                 totalChildrenChecked++;
             }
         }
 
-        if (!(totalChildrenChecked == childTCs.size())) {
-            result = false;
-        } // else keep result as is
+        if (true == result) {
+            if (totalChildrenChecked != childTCs.size()) {
+                result = false;
+            } // else keep result as is
+        }
 
-        Log.d("SEROTONIN", "areAllSubChildsSame=" + result + " childTestCaseName=" + childTestCaseName);
+        /*Log.d("ExpandableListAdapter", "areAllChildrenChecked=" + result
+                + " childTestCaseName=" + childTestCaseName);*/
         return result;
     }
 
@@ -117,49 +122,18 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         String groupName = getGroupName(childTestCaseName);
         List<String> childTCs = testCaseCollection.get(groupName);
 
-        if (areAllSubChildsSame(childTCs, /*value <-- no option uncheck*/true, childTestCaseName)) {
+        if (areAllChildrenChecked(childTCs, true /*no option uncheck*/, childTestCaseName)) {
             if (allCBStatus.containsKey(groupName)) {
                 allCBStatus.remove(groupName);
             }
-            allCBStatus.put(groupName, /*value*/ true);
+            allCBStatus.put(groupName, true);
         }
-            /*
-        int count = 0;
-//        if (allCBStatus.containsKey(groupName)) {
-            for (String childTC: childTCs) {
-                if (allCBStatus.get(groupName) == allCBStatus.get(childTC)) {
-                    count++;
-                } else {
-                    break;
-                }
-            }
-//        }
-
-//        Log.d("SEROTONIN", "groupName=" + groupName + " count=" + count + " childTCs=" + childTCs);
-
-        if (count == childTCs.size()) { // group and children are already all checked or unchecked.
-            // do nothing, because view is already updated properly.
-        } else {
-            if (areAllSubChildsSame(childTCs, value, childTestCaseName)) {
-                if(allCBStatus.containsKey(groupName)) {
-                    allCBStatus.remove(groupName);
-                }
-                allCBStatus.put(groupName, value);
-            } */
-            /*else {
-                if(allCBStatus.containsKey(groupName)) {
-                    allCBStatus.remove(groupName);
-                }
-                allCBStatus.put(groupName, false);
-//                isForceUpdatedGroupCheckbox = true;
-            }*/
-       // }
     }
 
     public void updateSubListCBStatus(String groupName, Boolean value) {
-        List<String> childTCs =  testCaseCollection.get(groupName);
+        List<String> childTCs = testCaseCollection.get(groupName);
         for (String tc : childTCs) {
-            if(allCBStatus.containsKey(tc)) {
+            if (allCBStatus.containsKey(tc)) {
                 allCBStatus.remove(tc);
             }
             allCBStatus.put(tc, value);
@@ -167,7 +141,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
     }
 
     public void updateAllCBStatus(String name, Boolean value) {
-        if(allCBStatus.containsKey(name)) {
+        if (allCBStatus.containsKey(name)) {
             allCBStatus.remove(name);
         }
         allCBStatus.put(name, value); // add the changed value
@@ -180,7 +154,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
     }
 
     public boolean getAllCBStatus(String name) {
-        if(allCBStatus.containsKey(name)) {
+        if (allCBStatus.containsKey(name)) {
             return allCBStatus.get(name);
         }
         return false;
@@ -214,59 +188,27 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.group_item_check_box);
         checkBox.setText(groupName);
         checkBox.setTextColor(Color.BLACK);
+
         if (checkBox.isChecked() != getAllCBStatus(groupName)) { // refrain unnecessary checking/unchecking
+            checkBox.setOnCheckedChangeListener(null); // refrain cyclical onCheckedChanged
             checkBox.setChecked(getAllCBStatus(groupName));
         }
 
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    updateAllCBStatus(buttonView.getText().toString(), isChecked);
-                    setNewItems(context, testCaseGroupList, testCaseCollection);
-
-                // --->>> below is for select-deselect children checkboxes when group checkbox is clicked:
-                /*final String groupName = buttonView.getText().toString();
-
-                for (int i=0; i<groupViewHolder.size(); i++) {
-                    List<CheckBox> childCheckBoxList = groupViewHolder.get(groupName);
-
-                    int cbCount = 0;
-                    for (CheckBox cb: childCheckBoxList) {
-                        cb.setChecked(isChecked);
-                        cbCount++;
-                        if(cbCount == getChildrenCount(groupPosition)) {
-                            break;
-                        }
-                    }
-                    Log.d("ExpandableListAdapter", "cbCount=" + cbCount + "group_count = " + groupViewHolder.size());
-                }*/
+                updateAllCBStatus(buttonView.getText().toString(), isChecked);
+                setNewItems(context, testCaseGroupList, testCaseCollection);
             }
 
         });
-
-        /*checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for(int i = 0; i<(testCaseCollection.get(groupPosition)).size(); i++) {
-                    testCaseCollection.get(groupPosition).get(i).setCheck(gholder.groupcheckbox.isChecked());
-                }
-
-                array.get(groupPosition).setCheck(gholder.groupcheck.isChecked());
-
-                notifyDataSetChanged();
-            }
-        });*/
         return convertView;
     }
 
     /*@Override
     public void onGroupExpanded(int groupPosition) {
         super.onGroupExpanded(groupPosition);
-        String groupName = (String) getGroup(groupPosition);
-        List<CheckBox> childCheckBoxList = groupViewHolder.get(groupName);
-        for (CheckBox cb : childCheckBoxList) {
-            cb.setChecked(groupCheckBoxStatus.get(groupName));
-        }
+
     }*/
 
     public boolean hasStableIds() {
@@ -276,9 +218,4 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
-
-    /*@Override
-    public void onClick(View view) {
-        Log.d("ExpandableListAdapter", "id = " + view.getId());
-    }*/
 }
