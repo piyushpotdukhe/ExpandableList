@@ -123,9 +123,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         List<String> childTCs = testCaseCollection.get(groupName);
 
         if (areAllChildrenChecked(childTCs, true /*no option uncheck*/, childTestCaseName)) {
-            if (allCBStatus.containsKey(groupName)) {
-                allCBStatus.remove(groupName);
-            }
             allCBStatus.put(groupName, true);
         }
     }
@@ -133,17 +130,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
     public void updateSubListCBStatus(String groupName, Boolean value) {
         List<String> childTCs = testCaseCollection.get(groupName);
         for (String tc : childTCs) {
-            if (allCBStatus.containsKey(tc)) {
-                allCBStatus.remove(tc);
-            }
             allCBStatus.put(tc, value);
         }
     }
 
     public void updateAllCBStatus(String name, Boolean value) {
-        if (allCBStatus.containsKey(name)) {
-            allCBStatus.remove(name);
-        }
         allCBStatus.put(name, value); // add the changed value
 
         if (testCaseGroupList.contains(name)) { // if name is group
