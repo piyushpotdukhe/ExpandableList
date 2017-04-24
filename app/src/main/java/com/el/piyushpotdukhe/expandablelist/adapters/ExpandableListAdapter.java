@@ -1,7 +1,9 @@
 package com.el.piyushpotdukhe.expandablelist.adapters;
 
 /**
- * Created by piyush.potdukhe on 4/4/2017.
+ * Author       : Piyush Potdukhe
+ * Date         : 04-04-2017
+ * Usage        : Adapter class for expandable list
  */
 
 import java.util.LinkedHashMap;
@@ -13,7 +15,6 @@ import com.el.piyushpotdukhe.expandablelist.R;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,29 +24,33 @@ import android.widget.CompoundButton;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter /*implements View.OnClickListener*/ {
 
-    private Activity context;
-    private Map<String, List<String>> testCaseCollection;
-    private List<String> testCaseGroupList;
+    private Activity context; // activity context
+    private List<String> groupList; // group
+    private Map<String, List<String>> testCaseCollection; // map = { GroupName, ChildList }
 
-    public static Map<String, Boolean> allCBStatus = new LinkedHashMap<>();
+    // list to maintain: if user selected the item + group or not. For future use.
+    private static Map<String, Boolean> allCBStatus = new LinkedHashMap<>();
 
     public ExpandableListAdapter(Activity context, List<String> tcGroupList,
                                  Map<String, List<String>> tcCollection) {
         this.context = context;
         this.testCaseCollection = tcCollection;
-        this.testCaseGroupList = tcGroupList;
+        this.groupList = tcGroupList;
     }
 
-    public void setNewItems(Activity context, List<String> tcGroupList,
+    private void setNewItems(Activity context, List<String> tcGroupList,
                             Map<String, List<String>> tcCollection) {
         this.context = context;
         this.testCaseCollection = tcCollection;
-        this.testCaseGroupList = tcGroupList;
-        notifyDataSetChanged(); // as data set is changed, view for adapter will be reloaded.
+        this.groupList = tcGroupList;
+
+        // as data set is changed, view for adapter will be reloaded
+        // this will help reload the view and hence group can be checked / un-checked
+        notifyDataSetChanged();
     }
 
     public Object getChild(int groupPosition, int childPosition) {
-        return testCaseCollection.get(testCaseGroupList.get(groupPosition)).get(childPosition);
+        return testCaseCollection.get(groupList.get(groupPosition)).get(childPosition);
     }
 
     public long getChildId(int groupPosition, int childPosition) {
@@ -68,7 +73,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         //toggle sub-list, on group status changed.
         checkBox.setEnabled(!getAllCBStatus(getGroupName(tcName)));
 
-//        Log.d("ExpandableListAdapter", "getChildView: " + checkBox.getText() + "=" + checkBox.isChecked() );
         if (checkBox.isChecked() != getAllCBStatus(tcName)) { // refrain additional onChecked calls
             checkBox.setOnCheckedChangeListener(null);// refrain unnecessary checking/unchecking
             checkBox.setChecked(getAllCBStatus(tcName));
@@ -78,9 +82,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String clickedChild = buttonView.getText().toString();
-//                Log.d("ExpandableListAdapter", "onCheckedChanged-CHILD: " + clickedChild + "=" + isChecked);
                 updateAllCBStatus(clickedChild, isChecked);
-                setNewItems(context, testCaseGroupList, testCaseCollection);
+                setNewItems(context, groupList, testCaseCollection);
             }
         });
 
@@ -88,16 +91,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
     }
 
     private String getGroupName(String childName) {
-        for (String groupName : testCaseGroupList) {
+        for (String groupName : groupList) {
             List<String> childTCs = testCaseCollection.get(groupName);
             if (childTCs.contains(childName)) {
                 return groupName;
             }
         }
-        return "qwerty"; // group not found, return some dummy
+        return "dummyReturned"; // group not found, return some dummy
     }
 
-    private Boolean areAllChildrenChecked(List<String> childTCs, Boolean value, String childTestCaseName) {
+    private Boolean areAllChildrenChecked(List<String> childTCs, Boolean value) {
         boolean result = value;
         int totalChildrenChecked = 0;
         for (String childTC : childTCs) {
@@ -107,44 +110,42 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
             }
         }
 
-        if (true == result) {
+        if (result) {
             if (totalChildrenChecked != childTCs.size()) {
                 result = false;
             } // else keep result as is
         }
 
-        /*Log.d("ExpandableListAdapter", "areAllChildrenChecked=" + result
-                + " childTestCaseName=" + childTestCaseName);*/
         return result;
     }
 
-    public void updateGroupCBStatus(String childTestCaseName, Boolean value) {
+    private void updateGroupCBStatus(String childTestCaseName) {
         String groupName = getGroupName(childTestCaseName);
         List<String> childTCs = testCaseCollection.get(groupName);
 
-        if (areAllChildrenChecked(childTCs, true /*no option uncheck*/, childTestCaseName)) {
+        if (areAllChildrenChecked(childTCs, true /*no option un check*/)) {
             allCBStatus.put(groupName, true);
         }
     }
 
-    public void updateSubListCBStatus(String groupName, Boolean value) {
+    private void updateSubListCBStatus(String groupName, Boolean value) {
         List<String> childTCs = testCaseCollection.get(groupName);
         for (String tc : childTCs) {
             allCBStatus.put(tc, value);
         }
     }
 
-    public void updateAllCBStatus(String name, Boolean value) {
-        allCBStatus.put(name, value); // add the changed value
+    private void updateAllCBStatus(String name, Boolean value) {
+        allCBStatus.put(name, value); // add or update the changed value
 
-        if (testCaseGroupList.contains(name)) { // if name is group
+        if (groupList.contains(name)) { // if name is group
             updateSubListCBStatus(name, value); // set all child same as group
         } else { // if name is not group, it must be child test case
-            updateGroupCBStatus(name, value);
+            updateGroupCBStatus(name);
         }
     }
 
-    public boolean getAllCBStatus(String name) {
+    private boolean getAllCBStatus(String name) {
         if (allCBStatus.containsKey(name)) {
             return allCBStatus.get(name);
         }
@@ -152,15 +153,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
     }
 
     public int getChildrenCount(int groupPosition) {
-        return testCaseCollection.get(testCaseGroupList.get(groupPosition)).size();
+        return testCaseCollection.get(groupList.get(groupPosition)).size();
     }
 
     public Object getGroup(int groupPosition) {
-        return testCaseGroupList.get(groupPosition);
+        return groupList.get(groupPosition);
     }
 
     public int getGroupCount() {
-        return testCaseGroupList.size();
+        return groupList.size();
     }
 
     public long getGroupId(int groupPosition) {
@@ -180,7 +181,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
         checkBox.setText(groupName);
         checkBox.setTextColor(Color.BLACK);
 
-        if (checkBox.isChecked() != getAllCBStatus(groupName)) { // refrain unnecessary checking/unchecking
+        if (checkBox.isChecked() != getAllCBStatus(groupName)) { // refrain re-checking/un-checking
             checkBox.setOnCheckedChangeListener(null); // refrain cyclical onCheckedChanged
             checkBox.setChecked(getAllCBStatus(groupName));
         }
@@ -189,7 +190,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter /*implement
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 updateAllCBStatus(buttonView.getText().toString(), isChecked);
-                setNewItems(context, testCaseGroupList, testCaseCollection);
+                setNewItems(context, groupList, testCaseCollection);
             }
 
         });

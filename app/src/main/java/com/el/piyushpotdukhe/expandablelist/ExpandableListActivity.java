@@ -1,7 +1,9 @@
 package com.el.piyushpotdukhe.expandablelist;
 
 /**
- * Created by piyush.potdukhe on 4/4/2017.
+ * Author       : Piyush Potdukhe
+ * Date         : 04-04-2017
+ * Usage        : Activity Class for expandable list
  */
 
 import android.os.Bundle;
@@ -19,12 +21,11 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ExpandableListView;
 
 public class ExpandableListActivity extends AppCompatActivity {
-    public static final String LOG_TAG = "ExpandableListActivity";
 
     // <--- schema to maintain the grouping of elements --->
-    List<String> groupList; // this is group names list. Used as Key for myCollection map.
-    List<String> childList;
-    Map<String, List<String>> myCollection; // this is { GroupName, ChildList }
+    List<String> groupList; // All group items. Also, used as Key for myCollection map.
+    List<String> childList; // individual children list
+    Map<String, List<String>> myCollection; // map = { GroupName, ChildList }
 
     ExpandableListView expListView;
 
@@ -47,31 +48,31 @@ public class ExpandableListActivity extends AppCompatActivity {
 
     private void createGroupList() {
         groupList = new ArrayList<>();
-        groupList.add("VOLTE");
-        groupList.add("CS");
-        groupList.add("VOWIFI");
+        groupList.add("Car");
+        groupList.add("Mobile");
+        groupList.add("Pen");
     }
 
     private void createCollection() {
-        String[] VoLTE_Cases = {"MO Call", "MTCall", "CLIR"};
-        String[] CS_Cases = {"Conference Call", "Video Mo Call"};
-        String[] VoWiFi_Cases = {"SMS", "Registration"};
+        String[] CarList = {"VW Polo", "Tata Hexa", "Suzuki Swift"};
+        String[] MobileList = {"LG G6", "One Plus 3", "Moto G4 Plus"};
+        String[] PenList = {"Ball Pen", "Ink Pen", " Roller Pen"};
 
         myCollection = new LinkedHashMap<>();
 
         for (String tcGroup : groupList) {
             switch (tcGroup) {
-                case "CS":
-                    loadChild(CS_Cases);
+                case "Mobile":
+                    loadChild(MobileList);
                     break;
-                case "VOLTE":
-                    loadChild(VoLTE_Cases);
+                case "Car":
+                    loadChild(CarList);
                     break;
-                case "VOWIFI":
-                    loadChild(VoWiFi_Cases);
+                case "Pen":
+                    loadChild(PenList);
                     break;
                 default:
-                    loadChild(CS_Cases);
+                    loadChild(MobileList);
             }
             myCollection.put(tcGroup, childList);
         }
